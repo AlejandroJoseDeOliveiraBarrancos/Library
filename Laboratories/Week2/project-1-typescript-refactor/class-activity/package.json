@@ -1,0 +1,22 @@
+{
+  "name": "user-management-cli",
+  "version": "1.0.0",
+  "description": "A CLI application for managing users with CRUD operations",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["cli", "user-management", "crud", "javascript"],
+  "author": "",
+  "license": "ISC",
+  "bin": {
+    "user-cli": "./index.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
+ 
