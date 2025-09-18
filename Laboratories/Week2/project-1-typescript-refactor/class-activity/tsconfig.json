@@ -7,10 +7,10 @@
     "target": "esnext",
     "types": [
       "node"
-    ], // <-- Add this line
+    ],
     "lib": [
       "esnext"
-    ], // <-- Optional, but recommended
+    ],
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
@@ -21,6 +21,6 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true // <-- Remove trailing comma
+    "skipLibCheck": true
   }
 }
