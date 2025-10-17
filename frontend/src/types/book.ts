@@ -13,8 +13,6 @@ export interface Book {
   averageRating?: number;
   ratingsCount?: number;
   availability?: 'available' | 'borrowed' | 'reserved';
-  readingStatus?: 'reading' | 'completed' | 'not_started';
-  progressPercentage?: number;
   popularity?: number;
   stock?: number;
 }
@@ -51,11 +49,5 @@ export interface WishListItem {
   userId: string;
   addedDate: string;
   notifyWhenAvailable: boolean;
-}
-
-export enum ReadingStatus {
-  READING = 'reading',
-  COMPLETED = 'completed',
-  WISH_LIST = 'wishlist',
 }
 

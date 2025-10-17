@@ -80,7 +80,7 @@ const Navbar: React.FC = () => {
             sx={{ flexGrow: 0, fontWeight: 700, cursor: 'pointer' }}
             onClick={() => navigate('/')}
           >
-            📚 Library
+            LibraryX
           </Typography>
 
           {!isMobile && (

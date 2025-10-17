@@ -11,6 +11,7 @@ import {
 import { auth } from '@/config/firebase';
 import { User, AuthContextType } from '@/types/user';
 import apiService from '@/services/api';
+import { getFirebaseErrorMessage } from '@/utils/errorHandling';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -38,12 +39,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           photoURL: firebaseUser.photoURL,
         });
         setToken(idToken);
-        // Sync token with API service
         apiService.setToken(idToken);
       } else {
         setUser(null);
         setToken(null);
-        // Clear token from API service
         apiService.setToken(null);
       }
       setLoading(false);
@@ -53,19 +52,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const register = async (email: string, password: string, displayName: string) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    if (userCredential.user) {
-      await updateProfile(userCredential.user, { displayName });
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      if (userCredential.user) {
+        await updateProfile(userCredential.user, { displayName });
+      }
+    } catch (error) {
+      throw new Error(getFirebaseErrorMessage(error));
     }
   };
 
   const login = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      throw new Error(getFirebaseErrorMessage(error));
+    }
   };
 
   const loginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      throw new Error(getFirebaseErrorMessage(error));
+    }
   };
 
   const logout = async () => {

@@ -16,9 +16,10 @@ async def search_books(
     sortBy: str = Query("relevance", description="Sort order"),
     maxResults: int = Query(20, ge=1, le=40),
     startIndex: int = Query(0, ge=0),
+    db: Session = Depends(get_db),
 ):
     """
-    Search for books using Google Books API
+    Search for books using Google Books API and include stock information
     """
     try:
         results = await google_books_service.search_books(
@@ -29,6 +30,31 @@ async def search_books(
             max_results=maxResults,
             start_index=startIndex,
         )
+        
+        # Add stock information from database for each book
+        for book in results.get("items", []):
+            book_id = book["id"]
+            db_book = db.query(Book).filter(Book.id == book_id).first()
+            
+            if db_book:
+                book["popularity"] = db_book.popularity
+                book["stock"] = db_book.stock
+                book["availability"] = "available" if db_book.stock > 0 else "borrowed"
+            else:
+                # Book doesn't exist in DB yet - create it with default values
+                new_book = Book(
+                    id=book_id,
+                    popularity=0,
+                    stock=1,  # Default stock is 1
+                )
+                db.add(new_book)
+                db.commit()
+                db.refresh(new_book)
+                
+                book["popularity"] = new_book.popularity
+                book["stock"] = new_book.stock
+                book["availability"] = "available"
+        
         return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to search books: {str(e)}")
@@ -70,18 +96,4 @@ async def get_book(book_id: str, db: Session = Depends(get_db)):
         return book_data
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Book not found: {str(e)}")
-
-
-@router.put("/{book_id}/status")
-async def update_reading_status(book_id: str, status: str):
-    """
-    Update reading status for a book
-    TODO: Implement with database
-    """
-    return {
-        "message": "Reading status update endpoint",
-        "book_id": book_id,
-        "status": status,
-        "note": "This is a placeholder. Implement with database integration.",
-    }
 

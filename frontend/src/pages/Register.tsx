@@ -12,6 +12,13 @@ import {
 } from '@mui/material';
 import { Google } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  validateEmail,
+  validatePassword,
+  validateDisplayName,
+  validatePasswordConfirmation,
+} from '@/utils/validation';
+import PasswordStrengthIndicator from '@/components/UI/PasswordStrengthIndicator';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -22,25 +29,57 @@ const Register: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  const [displayNameError, setDisplayNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
-  // Redirect if already logged in
   useEffect(() => {
     if (user) {
       navigate('/');
     }
   }, [user, navigate]);
 
+  const validateDisplayNameField = (value: string) => {
+    const result = validateDisplayName(value);
+    setDisplayNameError(result.isValid ? '' : result.message || '');
+    return result.isValid;
+  };
+
+  const validateEmailField = (value: string) => {
+    const result = validateEmail(value);
+    setEmailError(result.isValid ? '' : result.message || '');
+    return result.isValid;
+  };
+
+  const validatePasswordField = (value: string) => {
+    const result = validatePassword(value);
+    setPasswordError(result.isValid ? '' : result.message || '');
+    return result.isValid;
+  };
+
+  const validateConfirmPasswordField = (value: string) => {
+    const result = validatePasswordConfirmation(password, value);
+    setConfirmPasswordError(result.isValid ? '' : result.message || '');
+    return result.isValid;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    setDisplayNameError('');
+    setEmailError('');
+    setPasswordError('');
+    setConfirmPasswordError('');
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+    const isDisplayNameValid = validateDisplayNameField(displayName);
+    const isEmailValid = validateEmailField(email);
+    const isPasswordValid = validatePasswordField(password);
+    const isConfirmPasswordValid = validateConfirmPasswordField(confirmPassword);
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+    if (!isDisplayNameValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid) {
       return;
     }
 
@@ -107,36 +146,95 @@ const Register: React.FC = () => {
             fullWidth
             label="Full Name"
             value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
+            onChange={(e) => {
+              setDisplayName(e.target.value);
+              if (displayNameError) {
+                validateDisplayNameField(e.target.value);
+              }
+            }}
+            onBlur={() => validateDisplayNameField(displayName)}
+            error={!!displayNameError}
+            helperText={displayNameError}
             required
             sx={{ mb: 2 }}
+            inputProps={{ maxLength: 50 }}
           />
           <TextField
             fullWidth
             label="Email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (emailError) {
+                validateEmailField(e.target.value);
+              }
+            }}
+            onBlur={() => validateEmailField(email)}
+            error={!!emailError}
+            helperText={emailError}
             required
             sx={{ mb: 2 }}
+            inputProps={{ maxLength: 254 }}
           />
           <TextField
             fullWidth
             label="Password"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (passwordError) {
+                validatePasswordField(e.target.value);
+              }
+              if (confirmPassword) {
+                validateConfirmPasswordField(confirmPassword);
+              }
+            }}
+            onBlur={() => validatePasswordField(password)}
+            error={!!passwordError}
+            helperText={passwordError}
             required
-            sx={{ mb: 2 }}
+            sx={{ mb: 1 }}
+            inputProps={{ maxLength: 128 }}
           />
+          <PasswordStrengthIndicator password={password} />
+          
+          <Box sx={{ mb: 2, p: 2, backgroundColor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 500 }}>
+              Password Requirements:
+            </Typography>
+            <Typography variant="caption" color="text.secondary" component="div">
+              • At least 8 characters long
+            </Typography>
+            <Typography variant="caption" color="text.secondary" component="div">
+              • Contains uppercase and lowercase letters
+            </Typography>
+            <Typography variant="caption" color="text.secondary" component="div">
+              • Contains at least one number
+            </Typography>
+            <Typography variant="caption" color="text.secondary" component="div">
+              • Contains at least one special character
+            </Typography>
+          </Box>
+          
           <TextField
             fullWidth
             label="Confirm Password"
             type="password"
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              if (confirmPasswordError) {
+                validateConfirmPasswordField(e.target.value);
+              }
+            }}
+            onBlur={() => validateConfirmPasswordField(confirmPassword)}
+            error={!!confirmPasswordError}
+            helperText={confirmPasswordError}
             required
             sx={{ mb: 3 }}
+            inputProps={{ maxLength: 128 }}
           />
           <Button
             type="submit"

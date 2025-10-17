@@ -74,21 +74,48 @@ const BookCard: React.FC<BookCardProps> = ({
               top: 8,
               right: 8,
               backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              transition: 'all 0.3s ease',
               '&:hover': {
                 backgroundColor: 'rgba(255, 255, 255, 1)',
+                transform: 'scale(1.1)',
               },
             }}
             onClick={handleWishlistToggle}
           >
-            {inWishlist ? <Favorite color="error" /> : <FavoriteBorder />}
+            {inWishlist ? (
+              <Favorite 
+                sx={{ 
+                  color: 'primary.main',
+                  animation: 'heartBeat 0.6s ease-in-out',
+                  '@keyframes heartBeat': {
+                    '0%': { transform: 'scale(1)' },
+                    '50%': { transform: 'scale(1.2)' },
+                    '100%': { transform: 'scale(1)' },
+                  }
+                }} 
+              />
+            ) : (
+              <FavoriteBorder 
+                sx={{ 
+                  transition: 'color 0.3s ease',
+                  '&:hover': { color: 'primary.main' }
+                }} 
+              />
+            )}
           </IconButton>
         )}
-        {book.availability && (
+        {(book.availability || book.stock !== undefined) && (
           <Chip
-            label={book.availability}
+            label={
+              book.stock !== undefined 
+                ? (book.stock > 0 ? `${book.stock} in stock` : 'Out of stock')
+                : book.availability
+            }
             size="small"
             color={
-              book.availability === 'available'
+              book.stock !== undefined
+                ? (book.stock > 0 ? 'success' : 'error')
+                : book.availability === 'available'
                 ? 'success'
                 : book.availability === 'borrowed'
                 ? 'error'

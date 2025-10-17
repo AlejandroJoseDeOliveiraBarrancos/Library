@@ -16,7 +16,6 @@ import {
   FavoriteBorder,
   LibraryAdd,
   Star,
-  CheckCircle,
 } from '@mui/icons-material';
 import Layout from '@/components/Layout/Layout';
 import BookDetailsSkeleton from '@/components/Books/BookDetailsSkeleton';
@@ -45,7 +44,6 @@ const BookDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [inWishlist, setInWishlist] = useState(false);
-  const [readingStatus, setReadingStatus] = useState<'reading' | 'completed' | 'not_started'>('not_started');
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -174,18 +172,6 @@ const BookDetails: React.FC = () => {
         severity: 'error',
         title: 'Wishlist Error',
       });
-    }
-  };
-
-  const handleReadingStatusChange = async (status: 'reading' | 'completed') => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-    try {
-      setReadingStatus(status);
-    } catch (err) {
-      console.error('Failed to update reading status:', err);
     }
   };
 
@@ -326,26 +312,6 @@ const BookDetails: React.FC = () => {
               >
                 {inWishlist ? 'In Wishlist' : 'Add to Wishlist'}
               </Button>
-              {readingStatus === 'reading' && (
-                <Button
-                  variant="outlined"
-                  size="large"
-                  startIcon={<CheckCircle />}
-                  onClick={() => handleReadingStatusChange('completed')}
-                >
-                  Mark as Completed
-                </Button>
-              )}
-              {readingStatus === 'completed' && (
-                <Button
-                  variant="outlined"
-                  size="large"
-                  startIcon={<CheckCircle />}
-                  disabled
-                >
-                  Completed
-                </Button>
-              )}
             </Box>
 
             <Divider sx={{ my: 3 }} />

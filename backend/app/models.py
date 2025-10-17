@@ -52,12 +52,3 @@ class WishListItem(Base):
     user = relationship("User", back_populates="wishlist_items")
 
 
-class ReadingStatus(Base):
-    __tablename__ = "reading_status"
-
-    id = Column(String, primary_key=True, index=True)
-    user_id = Column(String, ForeignKey("users.id"))
-    book_id = Column(String, index=True)
-    status = Column(String)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-

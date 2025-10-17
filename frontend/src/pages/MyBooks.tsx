@@ -13,7 +13,6 @@ import {
 import {
   MenuBook,
   CheckCircle,
-  PlayArrow,
 } from '@mui/icons-material';
 import Layout from '@/components/Layout/Layout';
 import BookCard from '@/components/Books/BookCard';
@@ -47,7 +46,6 @@ const MyBooks: React.FC = () => {
             const bookDetails = await apiService.getBook(loan.book_id);
             return {
               ...bookDetails,
-              readingStatus: 'reading' as const,
               availability: 'borrowed' as const,
             };
           } catch (err) {
@@ -96,39 +94,27 @@ const MyBooks: React.FC = () => {
   const getFilteredBooks = () => {
     switch (activeTab) {
       case 0: 
-        return books.filter(book => book.readingStatus === 'reading');
+        return books.filter((book: Book) => book.availability === 'borrowed');
       case 1:
-        return books.filter(book => book.readingStatus === 'completed');
+        // For now, we'll show all available books as "returned" since we're not tracking reading status
+        return books.filter((book: Book) => book.availability === 'available');
       default:
         return books;
     }
   };
 
-  const getReadingStatusChip = (book: Book) => {
-    switch (book.readingStatus) {
-      case 'reading':
-        return (
-          <Chip
-            icon={<PlayArrow />}
-            label={`${book.progressPercentage || 0}%`}
-            color="primary"
-            size="small"
-            sx={{ position: 'absolute', top: 8, left: 8 }}
-          />
-        );
-      case 'completed':
-        return (
-          <Chip
-            icon={<CheckCircle />}
-            label="Completed"
-            color="success"
-            size="small"
-            sx={{ position: 'absolute', top: 8, left: 8 }}
-          />
-        );
-      default:
-        return null;
+  const getBookStatusChip = (book: Book) => {
+    if (book.availability === 'borrowed') {
+      return (
+        <Chip
+          label="Loaned"
+          color="primary"
+          size="small"
+          sx={{ position: 'absolute', top: 8, left: 8 }}
+        />
+      );
     }
+    return null;
   };
 
   if (!user) {
@@ -161,12 +147,12 @@ const MyBooks: React.FC = () => {
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
           <Tabs value={activeTab} onChange={handleTabChange}>
             <Tab 
-              label="Currently Reading (Loaned)" 
+              label="Currently Loaned" 
               icon={<MenuBook />}
               iconPosition="start"
             />
             <Tab 
-              label="Completed" 
+              label="Returned" 
               icon={<CheckCircle />}
               iconPosition="start"
             />
@@ -190,8 +176,8 @@ const MyBooks: React.FC = () => {
         ) : filteredBooks.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
-              {activeTab === 0 && 'No books currently being read (loaned)'}
-              {activeTab === 1 && 'No completed books'}
+              {activeTab === 0 && 'No books currently loaned'}
+              {activeTab === 1 && 'No returned books'}
             </Typography>
             <Button
               variant="contained"
@@ -208,14 +194,14 @@ const MyBooks: React.FC = () => {
             </Typography>
             
             <Grid container spacing={3}>
-              {filteredBooks.map((book) => (
+              {filteredBooks.map((book: Book) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
                   <Box sx={{ position: 'relative' }}>
                     <BookCard
                       book={book}
                       onClick={handleBookClick}
                     />
-                    {getReadingStatusChip(book)}
+                    {getBookStatusChip(book)}
                   </Box>
                 </Grid>
               ))}

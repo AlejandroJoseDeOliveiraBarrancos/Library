@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { Google } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
+import { validateEmail } from '@/utils/validation';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -20,17 +21,39 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
 
-  // Redirect if already logged in
   useEffect(() => {
     if (user) {
       navigate('/');
     }
   }, [user, navigate]);
 
+  const validateEmailField = (value: string) => {
+    const result = validateEmail(value);
+    setEmailError(result.isValid ? '' : result.message || '');
+    return result.isValid;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setEmailError('');
+
+    if (!email.trim()) {
+      setEmailError('Email is required');
+      return;
+    }
+    
+    if (!password.trim()) {
+      setError('Password is required');
+      return;
+    }
+
+    if (!validateEmailField(email)) {
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -95,9 +118,18 @@ const Login: React.FC = () => {
             label="Email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (emailError) {
+                validateEmailField(e.target.value);
+              }
+            }}
+            onBlur={() => validateEmailField(email)}
+            error={!!emailError}
+            helperText={emailError}
             required
             sx={{ mb: 2 }}
+            inputProps={{ maxLength: 254 }}
           />
           <TextField
             fullWidth
@@ -107,6 +139,7 @@ const Login: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
             sx={{ mb: 3 }}
+            inputProps={{ maxLength: 128 }}
           />
           <Button
             type="submit"
