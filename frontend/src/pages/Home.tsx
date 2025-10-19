@@ -17,13 +17,12 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [wishlistBooks, setWishlistBooks] = useState<Set<string>>(new Set());
   const [searchParams, setSearchParams] = useState({
     query: '',
     category: '',
@@ -31,22 +30,6 @@ const Home: React.FC = () => {
   });
 
   const itemsPerPage = 20;
-
-  const fetchWishlist = useCallback(async () => {
-    if (!user) {
-      setWishlistBooks(new Set<string>());
-      return;
-    }
-    
-    try {
-      const wishlist = await apiService.getWishlist();
-      const bookIds = new Set<string>(wishlist.map((item: any) => item.bookId as string));
-      setWishlistBooks(bookIds);
-    } catch (err) {
-      console.error('Failed to fetch wishlist:', err);
-      setWishlistBooks(new Set<string>());
-    }
-  }, [user]);
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
@@ -68,8 +51,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     fetchBooks();
-    fetchWishlist();
-  }, [fetchBooks, fetchWishlist]);
+  }, [fetchBooks]);
 
   const handleSearch = (params: { query: string; category: string; sortBy: string }) => {
     setSearchParams(params);
@@ -80,30 +62,24 @@ const Home: React.FC = () => {
     navigate(`/books/${bookId}`);
   };
 
-  const handleWishlistToggle = async (bookId: string) => {
+  const handleWishlistToggle = async (bookId: string) => {    
     if (!user) {
       navigate('/login');
       return;
     }
     
-    const isInWishlist = wishlistBooks.has(bookId);
-    
     try {
-      if (isInWishlist) {
-        await apiService.removeFromWishlist(bookId);
-        setWishlistBooks((prev: Set<string>) => {
-          const newSet = new Set(prev);
-          newSet.delete(bookId);
-          return newSet;
-        });
-        console.log('Book removed from wishlist:', bookId);
-      } else {
-        await apiService.addToWishlist(bookId);
-        setWishlistBooks((prev: Set<string>) => new Set(prev).add(bookId));
-        console.log('Book added to wishlist:', bookId);
-      }
+      // Try to add to wishlist first, if it fails, try to remove
+      await apiService.addToWishlist(bookId);
+      console.log('Book added to wishlist:', bookId);
     } catch (err: any) {
-      console.error('Failed to toggle wishlist:', err);
+      console.error('Failed to add to wishlist, trying to remove:', err);
+      try {
+        await apiService.removeFromWishlist(bookId);
+        console.log('Book removed from wishlist:', bookId);
+      } catch (removeErr) {
+        console.error('Failed to remove from wishlist:', removeErr);
+      }
     }
   };
 
@@ -144,7 +120,6 @@ const Home: React.FC = () => {
                       book={book}
                       onClick={handleBookClick}
                       onWishlistToggle={handleWishlistToggle}
-                      inWishlist={wishlistBooks.has(book.id)}
                     />
                   </Grid>
                 ))
