@@ -8,6 +8,7 @@ import os
 def initialize_firebase():
     """
     Initialize Firebase Admin SDK with service account credentials.
+    Supports both JSON file and environment variables.
     Safe to call multiple times (won't reinitialize if already initialized).
     """
     try:
@@ -16,17 +17,20 @@ def initialize_firebase():
             print("Firebase Admin SDK already initialized")
             return
         
-        # Check if credentials file exists
-        if not os.path.exists(settings.FIREBASE_CREDENTIALS_PATH):
-            print(f"WARNING: Firebase credentials file not found at {settings.FIREBASE_CREDENTIALS_PATH}")
-            print("Authentication will not work. Please add firebase-credentials.json to the backend directory.")
-            print("See FIREBASE_SETUP.md for instructions.")
+        # Get Firebase credentials from config
+        try:
+            cred_dict = settings.get_firebase_credentials()
+            cred = credentials.Certificate(cred_dict)
+            firebase_admin.initialize_app(cred)
+            print("Firebase Admin SDK initialized successfully")
+            
+        except ValueError as e:
+            print(f"WARNING: Firebase credentials not properly configured: {e}")
+            print("Authentication will not work. Please configure Firebase credentials.")
+            print("Options:")
+            print("1. Set individual Firebase environment variables (FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, etc.)")
+            print("2. Provide firebase-credentials.json file")
             return
-        
-        # Initialize Firebase
-        cred = credentials.Certificate(settings.FIREBASE_CREDENTIALS_PATH)
-        firebase_admin.initialize_app(cred)
-        print("Firebase Admin SDK initialized successfully")
         
     except ValueError as e:
         # App already exists
