@@ -18,9 +18,6 @@ async def search_books(
     startIndex: int = Query(0, ge=0),
     db: Session = Depends(get_db),
 ):
-    """
-    Search for books using Google Books API and include stock information
-    """
     try:
         results = await google_books_service.search_books(
             query=query,
@@ -31,7 +28,6 @@ async def search_books(
             start_index=startIndex,
         )
         
-        # Add stock information from database for each book
         for book in results.get("items", []):
             book_id = book["id"]
             db_book = db.query(Book).filter(Book.id == book_id).first()
@@ -41,11 +37,10 @@ async def search_books(
                 book["stock"] = db_book.stock
                 book["availability"] = "available" if db_book.stock > 0 else "borrowed"
             else:
-                # Book doesn't exist in DB yet - create it with default values
                 new_book = Book(
                     id=book_id,
                     popularity=0,
-                    stock=1,  # Default stock is 1
+                    stock=1,
                 )
                 db.add(new_book)
                 db.commit()
@@ -62,28 +57,20 @@ async def search_books(
 
 @router.get("/{book_id}")
 async def get_book(book_id: str, db: Session = Depends(get_db)):
-    """
-    Get detailed information about a specific book including popularity and stock.
-    Automatically creates the book in database if it doesn't exist.
-    """
     try:
-        # Get book details from Google Books API
         book_data = await google_books_service.get_book(book_id)
         
-        # Get book from database to include popularity and stock
         db_book = db.query(Book).filter(Book.id == book_id).first()
         
-        # Add database fields to response
         if db_book:
             book_data["popularity"] = db_book.popularity
             book_data["stock"] = db_book.stock
             book_data["availability"] = "available" if db_book.stock > 0 else "borrowed"
         else:
-            # Book doesn't exist in DB yet - create it with default values
             new_book = Book(
                 id=book_id,
                 popularity=0,
-                stock=1,  # Default stock is 1
+                stock=1,
             )
             db.add(new_book)
             db.commit()

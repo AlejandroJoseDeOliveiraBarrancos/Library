@@ -30,7 +30,6 @@ class WishlistResponse(BaseModel):
 
 
 def ensure_user_exists(db: Session, user_id: str):
-    """Ensure user exists in database"""
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         user = User(id=user_id, email=f"{user_id}@placeholder.com", display_name="User")
@@ -41,13 +40,12 @@ def ensure_user_exists(db: Session, user_id: str):
 
 
 def ensure_book_exists(db: Session, book_id: str):
-    """Ensure book exists in database, create if not with default stock of 1"""
     book = db.query(Book).filter(Book.id == book_id).first()
     if not book:
         book = Book(
             id=book_id,
             popularity=0,
-            stock=1,  # Default stock is 1
+            stock=1,
         )
         db.add(book)
         db.commit()
@@ -60,7 +58,6 @@ async def get_wishlist(
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Get user's wishlist"""
     ensure_user_exists(db, current_user)
     
     wishlist_items = db.query(WishListItem).filter(
@@ -85,7 +82,6 @@ async def check_if_in_wishlist(
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Check if a book is in user's wishlist"""
     ensure_user_exists(db, current_user)
     
     item = db.query(WishListItem).filter(
@@ -102,11 +98,9 @@ async def add_to_wishlist(
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Add a book to wishlist"""
     ensure_user_exists(db, current_user)
     ensure_book_exists(db, request.book_id)
     
-    # Check if already in wishlist
     existing = db.query(WishListItem).filter(
         WishListItem.user_id == current_user,
         WishListItem.book_id == request.book_id
@@ -141,7 +135,6 @@ async def remove_from_wishlist(
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Remove a book from wishlist by book_id"""
     ensure_user_exists(db, current_user)
     
     wishlist_item = db.query(WishListItem).filter(

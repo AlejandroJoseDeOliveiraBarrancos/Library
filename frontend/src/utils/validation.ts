@@ -52,7 +52,6 @@ export const validatePassword = (password: string): ValidationResult => {
   return { isValid: true };
 };
 
-// Display name validation
 export const validateDisplayName = (name: string): ValidationResult => {
   if (!name.trim()) {
     return { isValid: false, message: 'Full name is required' };

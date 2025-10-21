@@ -11,15 +11,13 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Initialize Firebase Admin SDK
 initialize_firebase()
 
-# Create database tables
 create_tables()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for development
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

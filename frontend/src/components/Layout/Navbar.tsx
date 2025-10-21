@@ -54,7 +54,6 @@ const Navbar: React.FC = () => {
     navigate('/login');
   };
 
-  // Check admin status when user changes
   useEffect(() => {
     const checkAdminStatus = async () => {
       if (!user) {
@@ -62,7 +61,6 @@ const Navbar: React.FC = () => {
         return;
       }
 
-      // Check if user email is the admin email
       if (user.email === 'olvunnamed@gmail.com') {
         setIsAdmin(true);
       } else {

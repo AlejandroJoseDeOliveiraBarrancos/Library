@@ -42,7 +42,6 @@ const WishList: React.FC = () => {
     try {
       const wishlistData = await apiService.getWishlist();
       
-      // Fetch book details for each wishlist item and combine them
       const itemsWithBooks = await Promise.all(
         wishlistData.map(async (item: WishListItem) => {
           try {
@@ -207,7 +206,6 @@ const WishList: React.FC = () => {
           </Box>
         ) : (
           <>
-            {/* Navigation Controls */}
             {wishlistItems.length > 1 && (
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -238,7 +236,6 @@ const WishList: React.FC = () => {
               </Box>
             )}
 
-            {/* Grid View */}
             <Grid container spacing={3}>
               {wishlistItems.map((itemWithBook) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={itemWithBook.item.id}>

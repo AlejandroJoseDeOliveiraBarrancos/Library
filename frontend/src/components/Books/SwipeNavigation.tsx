@@ -20,7 +20,6 @@ const SwipeNavigation: React.FC<SwipeNavigationProps> = ({
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Minimum distance for a swipe
   const minSwipeDistance = 50;
 
   const onTouchStart = (e: React.TouchEvent) => {

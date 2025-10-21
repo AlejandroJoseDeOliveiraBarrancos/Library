@@ -10,7 +10,6 @@ Base = declarative_base()
 
 
 def create_tables():
-    """Create all database tables"""
     Base.metadata.create_all(bind=engine)
 
 

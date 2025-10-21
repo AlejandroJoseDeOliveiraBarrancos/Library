@@ -17,9 +17,6 @@ class GoogleBooksService:
         max_results: int = 20,
         start_index: int = 0,
     ) -> Dict[str, Any]:
-        """
-        Search for books using Google Books API
-        """
         print(f"DEBUG: search_books called with query='{query}', author='{author}', category='{category}', sort_by='{sort_by}'")
         
         search_terms = []
@@ -68,9 +65,6 @@ class GoogleBooksService:
         }
 
     async def get_book(self, book_id: str) -> Dict[str, Any]:
-        """
-        Get detailed information about a specific book
-        """
         params = {}
         if self.api_key:
             params["key"] = self.api_key
@@ -88,9 +82,6 @@ class GoogleBooksService:
         return self._transform_book(data["id"], volume_info)
 
     def _transform_book(self, book_id: str, volume_info: Dict) -> Dict[str, Any]:
-        """
-        Transform Google Books API response to our book format
-        """
         image_links = volume_info.get("imageLinks", {})
         cover_image = (
             image_links.get("large")
@@ -99,7 +90,6 @@ class GoogleBooksService:
             or None
         )
         
-        # Fix HTTP to HTTPS for cover images to avoid mixed content issues
         if cover_image and cover_image.startswith("http://"):
             cover_image = cover_image.replace("http://", "https://")
 
@@ -125,7 +115,7 @@ class GoogleBooksService:
             "ratingsCount": volume_info.get("ratingsCount"),
             "previewLink": volume_info.get("previewLink"),
             "infoLink": volume_info.get("infoLink"),
-            "availability": "available",  # Default availability
+            "availability": "available",
         }
 
 

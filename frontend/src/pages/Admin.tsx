@@ -65,10 +65,8 @@ const Admin: React.FC = () => {
       setReturningLoanId(loanId);
       await apiService.adminReturnBook(loanId);
       
-      // Remove the returned loan from the list
       setLoans(prev => prev.filter(loan => loan.id !== loanId));
       
-      // Show success message (you could use a snackbar here)
       console.log('Book returned successfully');
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to return book');
@@ -137,7 +135,6 @@ const Admin: React.FC = () => {
           {loans.map((loan) => (
             <Grid item xs={12} sm={6} md={4} key={loan.id}>
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                {/* Book Image */}
                 <CardMedia
                   component="img"
                   height="200"
@@ -150,19 +147,16 @@ const Admin: React.FC = () => {
                 />
                 
                 <CardContent sx={{ flexGrow: 1 }}>
-                  {/* Book Title */}
                   <Typography variant="h6" component="h3" gutterBottom>
                     {loan.book_title}
                   </Typography>
                   
-                  {/* Authors */}
                   {loan.book_authors.length > 0 && (
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                       by {loan.book_authors.join(', ')}
                     </Typography>
                   )}
 
-                  {/* User Info */}
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <Avatar sx={{ mr: 1, width: 24, height: 24 }}>
                       <PersonIcon fontSize="small" />
@@ -176,7 +170,6 @@ const Admin: React.FC = () => {
                     {loan.user_email}
                   </Typography>
 
-                  {/* Loan Dates */}
                   <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                       <CalendarIcon sx={{ mr: 1, fontSize: 16 }} />
@@ -196,7 +189,6 @@ const Admin: React.FC = () => {
                     </Box>
                   </Box>
 
-                  {/* Status Chip */}
                   <Box sx={{ mb: 2 }}>
                     <Chip
                       label={isOverdue(loan.due_date) ? 'Overdue' : 'Active'}
@@ -230,7 +222,6 @@ const Admin: React.FC = () => {
         </Grid>
       )}
 
-      {/* Summary Stats */}
       <Paper sx={{ p: 3, mt: 4 }}>
         <Typography variant="h6" gutterBottom>
           Summary

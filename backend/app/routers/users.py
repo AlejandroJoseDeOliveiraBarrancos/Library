@@ -6,10 +6,6 @@ router = APIRouter()
 
 @router.get("/me")
 async def get_current_user_info(current_user: str = Depends(get_current_user)):
-    """
-    Get current user information
-    TODO: Implement with database
-    """
     return {
         "user_id": current_user,
         "message": "User info endpoint",
@@ -19,10 +15,6 @@ async def get_current_user_info(current_user: str = Depends(get_current_user)):
 
 @router.get("/profile")
 async def get_user_profile(current_user: str = Depends(get_current_user)):
-    """
-    Get user profile with statistics
-    TODO: Implement with database
-    """
     return {
         "user_id": current_user,
         "total_loans": 0,

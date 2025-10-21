@@ -27,7 +27,6 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
       setCheckingAdmin(true);
       setError(null);
       
-      // Check if user email is the admin email
       if (user.email === 'olvunnamed@gmail.com') {
         setIsAdmin(true);
       } else {

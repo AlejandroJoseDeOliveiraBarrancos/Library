@@ -6,18 +6,11 @@ from app.config import settings
 import os
 
 def initialize_firebase():
-    """
-    Initialize Firebase Admin SDK with service account credentials.
-    Supports both JSON file and environment variables.
-    Safe to call multiple times (won't reinitialize if already initialized).
-    """
     try:
-        # Check if Firebase app is already initialized
         if firebase_admin._apps:
             print("Firebase Admin SDK already initialized")
             return
         
-        # Get Firebase credentials from config
         try:
             cred_dict = settings.get_firebase_credentials()
             cred = credentials.Certificate(cred_dict)
@@ -33,7 +26,6 @@ def initialize_firebase():
             return
         
     except ValueError as e:
-        # App already exists
         print(f"Firebase app already initialized: {e}")
     except Exception as e:
         print(f"ERROR: Firebase initialization failed: {e}")
@@ -46,11 +38,7 @@ security = HTTPBearer()
 async def verify_firebase_token(
     credentials: HTTPAuthorizationCredentials = Security(security)
 ) -> dict:
-    """
-    Verify Firebase ID token and return decoded token with user info
-    """
     try:
-        # Check if Firebase is initialized
         if not firebase_admin._apps:
             raise HTTPException(
                 status_code=503,
@@ -71,7 +59,6 @@ async def verify_firebase_token(
             detail="Authentication token has expired. Please log in again."
         )
     except HTTPException:
-        # Re-raise HTTPExceptions as-is
         raise
     except Exception as e:
         print(f"Token verification error: {str(e)}")
@@ -82,8 +69,5 @@ async def verify_firebase_token(
 
 
 async def get_current_user(token: dict = Security(verify_firebase_token)) -> str:
-    """
-    Extract user ID from verified token
-    """
     return token.get("uid")
 

@@ -25,7 +25,6 @@ class LoanResponse(BaseModel):
 
 
 def ensure_user_exists(db: Session, user_id: str):
-    """Ensure user exists in database"""
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         user = User(id=user_id, email=f"{user_id}@placeholder.com", display_name="User")
@@ -36,7 +35,6 @@ def ensure_user_exists(db: Session, user_id: str):
 
 
 def ensure_book_exists(db: Session, book_id: str):
-    """Ensure book exists in database, create if not with default stock of 1"""
     book = db.query(Book).filter(Book.id == book_id).first()
     if not book:
         book = Book(
@@ -55,7 +53,6 @@ async def get_my_loans(
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Get all loans for the current user"""
     ensure_user_exists(db, current_user)
     
     loans = db.query(Loan).filter(
@@ -82,20 +79,15 @@ async def borrow_book(
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """
-    Borrow a book - decreases stock, increases popularity
-    """
     ensure_user_exists(db, current_user)
     book = ensure_book_exists(db, loan_request.book_id)
     
-    # Check if book is available
     if book.stock <= 0:
         raise HTTPException(
             status_code=400,
             detail="Book is currently out of stock. Add it to your wishlist to be notified when available."
         )
     
-    # Check if user already has an active loan for this book
     existing_loan = db.query(Loan).filter(
         Loan.user_id == current_user,
         Loan.book_id == loan_request.book_id,
@@ -105,7 +97,6 @@ async def borrow_book(
     if existing_loan:
         raise HTTPException(status_code=400, detail="You already have this book on loan")
     
-    # Create loan
     borrowed_date = datetime.utcnow()
     due_date = borrowed_date + timedelta(days=14)
     
@@ -118,7 +109,6 @@ async def borrow_book(
         status="active",
     )
     
-    # Decrease stock and increase popularity
     book.stock -= 1
     book.popularity += 1
     
@@ -142,7 +132,6 @@ async def return_book(
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Return a borrowed book - increases stock"""
     ensure_user_exists(db, current_user)
     
     loan = db.query(Loan).filter(
@@ -156,11 +145,9 @@ async def return_book(
     if loan.status != "active":
         raise HTTPException(status_code=400, detail="Loan is not active")
     
-    # Mark loan as returned
     loan.status = "returned"
     loan.returned_date = datetime.utcnow()
     
-    # Increase stock back
     book = db.query(Book).filter(Book.id == loan.book_id).first()
     if book:
         book.stock += 1
@@ -180,7 +167,6 @@ async def get_loan(
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Get details of a specific loan"""
     ensure_user_exists(db, current_user)
     
     loan = db.query(Loan).filter(

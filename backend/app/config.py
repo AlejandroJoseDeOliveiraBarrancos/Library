@@ -4,10 +4,8 @@ import json
 
 
 class Settings(BaseSettings):
-    # Firebase - Support both file path and individual environment variables
     FIREBASE_CREDENTIALS_PATH: Optional[str] = "firebase-credentials.json"
     
-    # Firebase individual environment variables (alternative to JSON file)
     FIREBASE_PROJECT_ID: Optional[str] = None
     FIREBASE_PRIVATE_KEY_ID: Optional[str] = None
     FIREBASE_PRIVATE_KEY: Optional[str] = None
@@ -19,14 +17,11 @@ class Settings(BaseSettings):
     FIREBASE_CLIENT_X509_CERT_URL: Optional[str] = None
     FIREBASE_UNIVERSE_DOMAIN: Optional[str] = "googleapis.com"
     
-    # Google Books API
     GOOGLE_BOOKS_API_KEY: str = ""
     GOOGLE_BOOKS_API_URL: str = "https://www.googleapis.com/books/v1"
     
-    # Database - Support both single URL and individual parameters
     DATABASE_URL: Optional[str] = "postgresql://library_user:library_password@db:5432/library_db"
     
-    # Database individual parameters (alternative to DATABASE_URL)
     DB_HOST: Optional[str] = None
     DB_PORT: Optional[int] = None
     DB_NAME: Optional[str] = None
@@ -34,7 +29,6 @@ class Settings(BaseSettings):
     DB_PASSWORD: Optional[str] = None
     DB_DRIVER: str = "postgresql"
     
-    # JWT
     SECRET_KEY: str = "your-secret-key-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
@@ -44,19 +38,15 @@ class Settings(BaseSettings):
         case_sensitive = True
     
     def get_database_url(self) -> str:
-        """Get database URL from either DATABASE_URL or individual parameters"""
         if self.DATABASE_URL:
             return self.DATABASE_URL
         
-        # Build URL from individual parameters
         if all([self.DB_HOST, self.DB_PORT, self.DB_NAME, self.DB_USER, self.DB_PASSWORD]):
             return f"{self.DB_DRIVER}://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         
         raise ValueError("Either DATABASE_URL or all individual DB parameters (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD) must be provided")
     
     def get_firebase_credentials(self) -> dict:
-        """Get Firebase credentials from either JSON file or environment variables"""
-        # Try individual environment variables first
         if all([
             self.FIREBASE_PROJECT_ID,
             self.FIREBASE_PRIVATE_KEY_ID,
@@ -78,7 +68,6 @@ class Settings(BaseSettings):
                 "universe_domain": self.FIREBASE_UNIVERSE_DOMAIN
             }
         
-        # Fallback to JSON file
         if self.FIREBASE_CREDENTIALS_PATH:
             import os
             if os.path.exists(self.FIREBASE_CREDENTIALS_PATH):

@@ -72,10 +72,8 @@ const BookDetails: React.FC = () => {
       setCurrentBookId(id);
       fetchBookDetails();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, setCurrentBookId]);
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowLeft' && hasPrevious) {
@@ -370,7 +368,6 @@ const BookDetails: React.FC = () => {
           </Grid>
         </Paper>
 
-        {/* Book Navigation */}
         <BookNavigation
           previousBook={previousBook}
           nextBook={nextBook}
@@ -381,7 +378,6 @@ const BookDetails: React.FC = () => {
         />
       </SwipeNavigation>
 
-      {/* Custom Notification */}
       <SnackbarNotification
         open={notification.open}
         onClose={() => setNotification(prev => ({ ...prev, open: false }))}

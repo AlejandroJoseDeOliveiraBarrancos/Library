@@ -33,8 +33,6 @@ async def get_all_active_loans(
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Get all active loans for admin management"""
-    # Get all active loans with user information
     loans = db.query(Loan, User).join(
         User, Loan.user_id == User.id
     ).filter(
@@ -44,7 +42,6 @@ async def get_all_active_loans(
     result = []
     for loan, user in loans:
         try:
-            # Get book details from Google Books API
             book_data = await google_books_service.get_book(loan.book_id)
             
             result.append(AdminLoanResponse(
@@ -61,7 +58,6 @@ async def get_all_active_loans(
                 book_authors=book_data.get("authors", []),
             ))
         except Exception as e:
-            # If book details can't be fetched, return 500 error
             raise HTTPException(
                 status_code=500,
                 detail=f"Failed to fetch book details for book {loan.book_id}: {str(e)}"
@@ -76,7 +72,6 @@ async def admin_return_book(
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Admin endpoint to return a book on behalf of a user"""
     loan = db.query(Loan).filter(Loan.id == loan_id).first()
     
     if not loan:
@@ -85,11 +80,9 @@ async def admin_return_book(
     if loan.status != "active":
         raise HTTPException(status_code=400, detail="Loan is not active")
     
-    # Mark loan as returned
     loan.status = "returned"
     loan.returned_date = datetime.utcnow()
     
-    # Increase stock back
     book = db.query(Book).filter(Book.id == loan.book_id).first()
     if book:
         book.stock += 1
@@ -110,7 +103,6 @@ async def make_user_admin(
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Make a user an admin"""
     target_user = db.query(User).filter(User.id == user_id).first()
     
     if not target_user:
@@ -132,7 +124,6 @@ async def remove_user_admin(
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Remove admin privileges from a user"""
     if user_id == current_user:
         raise HTTPException(status_code=400, detail="Cannot remove your own admin privileges")
     

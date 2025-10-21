@@ -31,7 +31,6 @@ const BookNavigation: React.FC<BookNavigationProps> = ({
 }) => {
   return (
     <Box sx={{ mt: 4 }}>
-      {/* Previous/Next Arrows */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <IconButton
@@ -72,9 +71,7 @@ const BookNavigation: React.FC<BookNavigationProps> = ({
         </Box>
       </Box>
 
-      {/* Book Previews */}
       <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
-        {/* Previous Book Preview */}
         {previousBook && (
           <Paper
             elevation={1}
@@ -130,7 +127,6 @@ const BookNavigation: React.FC<BookNavigationProps> = ({
           </Paper>
         )}
 
-        {/* Next Book Preview */}
         {nextBook && (
           <Paper
             elevation={1}
@@ -187,10 +183,9 @@ const BookNavigation: React.FC<BookNavigationProps> = ({
         )}
       </Box>
 
-      {/* Navigation Hint */}
       <Box sx={{ textAlign: 'center', mt: 2 }}>
         <Typography variant="caption" color="text.secondary">
-          💡 Tip: Use arrow keys or swipe to navigate between books
+          Tip: Use arrow keys or swipe to navigate between books
         </Typography>
       </Box>
     </Box>

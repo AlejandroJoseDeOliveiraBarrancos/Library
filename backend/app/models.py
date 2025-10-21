@@ -7,9 +7,9 @@ from app.database import Base
 class Book(Base):
     __tablename__ = "books"
 
-    id = Column(String, primary_key=True, index=True)  # Google Books API ID
-    popularity = Column(Integer, default=0, nullable=False)  # Increases with each loan
-    stock = Column(Integer, default=1, nullable=False)  # Library has 1 copy of each book
+    id = Column(String, primary_key=True, index=True)
+    popularity = Column(Integer, default=0, nullable=False)
+    stock = Column(Integer, default=1, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

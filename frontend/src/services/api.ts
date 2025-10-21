@@ -13,7 +13,6 @@ class ApiService {
       },
     });
 
-    // Request interceptor to add auth token
     this.api.interceptors.request.use(
       (config) => {
         const token = this.getToken();
@@ -25,12 +24,10 @@ class ApiService {
       (error) => Promise.reject(error)
     );
 
-    // Response interceptor for error handling
     this.api.interceptors.response.use(
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          // Handle unauthorized access
           window.location.href = '/login';
         }
         return Promise.reject(error);
@@ -50,7 +47,6 @@ class ApiService {
     return localStorage.getItem('authToken');
   }
 
-  // Books API
   async searchBooks(params: {
     query?: string;
     author?: string;
@@ -68,7 +64,6 @@ class ApiService {
     return response.data;
   }
 
-  // Loans API
   async getMyLoans() {
     const response = await this.api.get('/api/loans');
     return response.data;
@@ -84,7 +79,6 @@ class ApiService {
     return response.data;
   }
 
-  // Wishlist API
   async getWishlist() {
     const response = await this.api.get('/api/wishlist');
     return response.data;
@@ -108,13 +102,11 @@ class ApiService {
     return response.data;
   }
 
-  // Reading Status API
   async updateReadingStatus(bookId: string, status: string) {
     const response = await this.api.put(`/api/books/${bookId}/status`, { status });
     return response.data;
   }
 
-  // Admin API
   async getAllActiveLoans() {
     const response = await this.api.get('/api/admin/loans');
     return response.data;

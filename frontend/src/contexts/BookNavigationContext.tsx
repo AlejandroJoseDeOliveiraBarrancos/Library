@@ -27,12 +27,9 @@ export const BookNavigationProvider: React.FC<BookNavigationProviderProps> = ({ 
   const [hasNext, setHasNext] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Mock function to get related books - in real app this would be an API call
   const fetchRelatedBooks = async (bookId: string) => {
     setLoading(true);
     try {
-      // TODO: Implement API call to get related books
-      // For now, using mock data
       const mockBooks: Book[] = [
         {
           id: '1',
@@ -60,7 +57,6 @@ export const BookNavigationProvider: React.FC<BookNavigationProviderProps> = ({ 
         },
       ];
 
-      // Find current book index
       const currentIndex = mockBooks.findIndex(book => book.id === bookId);
       
       if (currentIndex === -1) {
@@ -71,7 +67,6 @@ export const BookNavigationProvider: React.FC<BookNavigationProviderProps> = ({ 
         return;
       }
 
-      // Set previous and next books
       setPreviousBook(currentIndex > 0 ? mockBooks[currentIndex - 1] : null);
       setNextBook(currentIndex < mockBooks.length - 1 ? mockBooks[currentIndex + 1] : null);
       setHasPrevious(currentIndex > 0);
@@ -97,14 +92,12 @@ export const BookNavigationProvider: React.FC<BookNavigationProviderProps> = ({ 
   const navigateToPrevious = () => {
     if (previousBook) {
       setCurrentBookId(previousBook.id);
-      // Navigation will be handled by React Router
     }
   };
 
   const navigateToNext = () => {
     if (nextBook) {
       setCurrentBookId(nextBook.id);
-      // Navigation will be handled by React Router
     }
   };
 

@@ -96,7 +96,6 @@ const MyBooks: React.FC = () => {
       case 0: 
         return books.filter((book: Book) => book.availability === 'borrowed');
       case 1:
-        // For now, we'll show all available books as "returned" since we're not tracking reading status
         return books.filter((book: Book) => book.availability === 'available');
       default:
         return books;

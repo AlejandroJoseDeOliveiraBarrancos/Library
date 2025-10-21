@@ -69,7 +69,6 @@ const Home: React.FC = () => {
     }
     
     try {
-      // Try to add to wishlist first, if it fails, try to remove
       await apiService.addToWishlist(bookId);
       console.log('Book added to wishlist:', bookId);
     } catch (err: any) {

@@ -1,14 +1,9 @@
-"""
-Script to initialize and test Firebase connection
-Run this to verify your Firebase credentials are working
-"""
 import os
 import sys
 from firebase_admin import credentials, auth, initialize_app
 
 
 def test_firebase_connection():
-    """Test Firebase Admin SDK connection"""
     print("Testing Firebase connection...")
     print("-" * 50)
     

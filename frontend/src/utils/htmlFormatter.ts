@@ -1,12 +1,3 @@
-/**
- * Utility functions for cleaning HTML content in book descriptions
- */
-
-/**
- * Removes all HTML tags and syntax from a string while preserving structure
- * @param htmlString - The HTML string to clean
- * @returns Clean string with HTML tags removed but formatting preserved
- */
 export const cleanHtmlDescription = (htmlString: string): string => {
   if (!htmlString) return '';
 
@@ -43,14 +34,8 @@ export const cleanHtmlDescription = (htmlString: string): string => {
     .trim();
 };
 
-/**
- * Formats a book description for display
- * @param description - The raw description string
- * @returns Formatted description ready for display
- */
 export const formatBookDescription = (description: string | undefined): string => {
   if (!description) return 'No description available.';
   
-  // Always clean HTML tags from descriptions
   return cleanHtmlDescription(description);
 };
