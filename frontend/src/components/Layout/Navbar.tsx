@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -25,6 +25,7 @@ import {
   AccountCircle,
   Login,
   Logout,
+  AdminPanelSettings,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -37,6 +38,7 @@ const Navbar: React.FC = () => {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -52,10 +54,30 @@ const Navbar: React.FC = () => {
     navigate('/login');
   };
 
+  // Check admin status when user changes
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      // Check if user email is the admin email
+      if (user.email === 'olvunnamed@gmail.com') {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user]);
+
   const menuItems = [
     { label: 'Home', icon: <Home />, path: '/' },
     { label: 'My Books', icon: <MenuBook />, path: '/my-books' },
     { label: 'Wish List', icon: <Favorite />, path: '/wishlist' },
+    ...(isAdmin ? [{ label: 'Admin', icon: <AdminPanelSettings />, path: '/admin' }] : []),
   ];
 
   return (

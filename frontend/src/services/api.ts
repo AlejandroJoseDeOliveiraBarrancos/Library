@@ -113,6 +113,17 @@ class ApiService {
     const response = await this.api.put(`/api/books/${bookId}/status`, { status });
     return response.data;
   }
+
+  // Admin API
+  async getAllActiveLoans() {
+    const response = await this.api.get('/api/admin/loans');
+    return response.data;
+  }
+
+  async adminReturnBook(loanId: string) {
+    const response = await this.api.put(`/api/admin/loans/${loanId}/return`);
+    return response.data;
+  }
 }
 
 export default new ApiService();

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routers import books, loans, wishlist, users
+from app.routers import books, loans, wishlist, users, admin
 from app.firebase_auth import initialize_firebase
 from app.database import create_tables
 
@@ -29,6 +29,7 @@ app.include_router(books.router, prefix="/api/books", tags=["Books"])
 app.include_router(loans.router, prefix="/api/loans", tags=["Loans"])
 app.include_router(wishlist.router, prefix="/api/wishlist", tags=["Wishlist"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
+app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 
 
 @app.get("/")

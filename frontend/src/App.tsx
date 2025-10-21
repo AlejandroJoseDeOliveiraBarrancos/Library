@@ -9,8 +9,10 @@ import Home from '@/pages/Home';
 import BookDetails from '@/pages/BookDetails';
 import MyBooks from '@/pages/MyBooks';
 import WishList from '@/pages/WishList';
+import Admin from '@/pages/Admin';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
+import AdminRoute from '@/components/Layout/AdminRoute';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -58,6 +60,14 @@ const AppRoutes: React.FC = () => {
           <ProtectedRoute>
             <MyBooks />
           </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <Admin />
+          </AdminRoute>
         }
       />
       <Route path="*" element={<Navigate to="/" replace />} />
